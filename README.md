@@ -5,6 +5,7 @@
 ## Authors
 
 - [Angel Isai (developer)](https://github.com/AngelIsaiRB)
+- [Luis Enrique (developer)](https://github.com/Luis-Blash)
 - [Inmersys](https://www.inmersys.com)
 
 ## Instalacion
