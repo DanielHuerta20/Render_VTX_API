@@ -1,10 +1,10 @@
 const {response } = require('express') ;
-const Shop = require('../models/shop');
+const { fakeShop } = require('../database/fakeDatabase');
 
 
 const getAllShops =async (req,res = response) => {
-    const shops =await Shop.find({status:true});
-    const total = await Shop.countDocuments();
+    const shops = fakeShop.filter(shop => {return shop.status})
+    const total = shops.length
     res.json({
         total,
         shops
@@ -13,12 +13,12 @@ const getAllShops =async (req,res = response) => {
 
 // este regresa el campo "dateCreated"
 const getAllShopsCMS =async (req,res = response) => {
-    const ie =await Shop.find();
+    const ie = fakeShop
     const shops = []
     ie.forEach(elm=>{
         shops.push( {
             status:elm.status,
-            _id:elm._id,
+            id:elm.id,
             name:elm.name,
             state:elm.state,
             city:elm.city,
@@ -32,16 +32,17 @@ const getAllShopsCMS =async (req,res = response) => {
             dateCreated:elm.dateCreated,
          } )
      })
-    const total = await Shop.countDocuments();
-    res.json({total,
-       shops
+    const total = fakeShop.length
+    res.json({
+        total,
+        shops
     })
 }
 
 const changeStatusStore = async(req,res = response) =>{
     const {id,status} = req.body
-    const store = await Shop.findById(id)
-    await store.updateOne({status})
+    const store = fakeShop.find(shop => { return shop.id === parseInt(id)})
+    store.status = status
     res.json({
         msg:"status cambio",
     })

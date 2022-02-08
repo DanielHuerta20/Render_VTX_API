@@ -78,15 +78,15 @@ class Server {
     this.app.use(this.usersRoutePath, require("../routes/user"));
     this.app.use(this.authPath, require("../routes/auth"));
     this.app.use(this.adminUsers, require("../routes/admin"));
-    // this.app.use(this.productsPath, require("../routes/product"));
+    this.app.use(this.productsPath, require("../routes/product"));
+    this.app.use(this.seriesPath, require("../routes/series"));
+    this.app.use(this.formatsPath, require("../routes/format"));
+    this.app.use(this.shopPath, require("../routes/shop"));
+    this.app.use(this.counterPath, require("../routes/counter"));
     // this.app.use(this.favoritePath, require("../routes/favorite"));
-    // this.app.use(this.shopPath, require("../routes/shop"));
-    // this.app.use(this.counterPath, require("../routes/counter"));
     // this.app.use(this.onboardingPath, require("../routes/onboarding"));
     // this.app.use(this.testPath, require("../routes/test"));
-    // this.app.use(this.seriesPath, require("../routes/series"));
     // this.app.use(this.analyticsPath, require("../routes/analytic"));
-    // this.app.use(this.formatsPath, require("../routes/format"));
   }
 
   listen() {

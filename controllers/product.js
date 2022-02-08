@@ -1,29 +1,34 @@
 const azure = require('azure-storage');
 const { v4: uuidv4 } = require('uuid');
 const {response } = require('express') ;
-const Product = require('../models/product');
-const Serie = require("../models/serie");
+const { fakeProduct } = require('../database/fakeDatabase');
 
 
 const productGet =async (req,res = response) => {
     const { limit = 5,start = 0 } = req.query;
     const query = {available:true};
-    const [products,total]= await Promise.all([
-        Product.find(query)
-        .skip(Number(start))
-        .limit(Number(limit)),
-        Product.countDocuments(query),
-    ])
+    const products = fakeProduct.filter(product => {return product.available})
+    // const [products,total]= await Promise.all([
+    //     Product.find(query)
+    //     .skip(Number(start))
+    //     .limit(Number(limit)),
+    //     Product.countDocuments(query),
+    // ])
     
     res.json({
-        AlltotalProducts:total,
+        AlltotalProducts:products.length,
         toalProductsInThisQuery:products.length,
         products
     })
 }
 const disableAll =async (req,res = response) => {
-    await Product.updateMany({available:true},{available:false})    
-    console.log("disbaled all products")
+    const products = fakeProduct.map(product => {
+        return {
+            ...product,
+            available: false
+        }
+    })   
+    console.log("disbaled all products", products)
     res.json({
         deshabilidtados:"todos"
     })
@@ -31,40 +36,48 @@ const disableAll =async (req,res = response) => {
 
 
 const getProductsArko= async (req,res=response)=>{
-    const [products,total] = await getProductsDB({available:true,branding:"ARKO"})
+    const products =  fakeProduct.filter(product => {
+        if(product.available && product.branding === 'ARKO'){
+            return product
+        }
+    })
     res.json({
-        toalProductsInThisQuery:total,
+        toalProductsInThisQuery:products.length,
         products
     })
 }
 const getProductsVitromexCMS = async (req,res=response)=>{
-    const [products,total] =await getProductsDB({branding:"VITROMEX"});
+    const products =  fakeProduct.filter(product => {return product.branding === 'VITROMEX'})
     res.json({
-        toalProductsInThisQuery:total,
+        toalProductsInThisQuery:products.length,
         products
     })
 }
 
 const getProductsARKOCMS = async (req,res=response)=>{
-    const [products,total] =await getProductsDB({branding:"ARKO"});
+    const products =  fakeProduct.filter(product => {return product.branding === 'ARKO'})
     res.json({
-        toalProductsInThisQuery:total,
+        toalProductsInThisQuery:products.length,
         products
     })
 }
 
 
 const getProductsVitromex= async (req,res=response)=>{
-    const [products,total] = await getProductsDB({available:true,branding:"VITROMEX"})    
+    const products =  fakeProduct.filter(product => {
+        if(product.available && product.branding === 'VITROMEX'){
+            return product
+        }
+    })   
     res.json({
-        toalProductsInThisQuery:total,
+        toalProductsInThisQuery:products.length,
         products
     })
 }
 
 const getProductById = async(req,res = response) => {
     const {id} = req.params;
-    const product = await Product.findById(id)
+    const product = fakeProduct.find(product => {return product.id === parseInt(id)})
     res.json({
         product
     })
@@ -72,11 +85,9 @@ const getProductById = async(req,res = response) => {
 
 const changeStatusProduct = async(req,res = response) =>{
     const {id,available} = req.body
-    const product = await Product.findById(id)
-    // console.log((available && product.smallPicture!=='' && product.albedo !=='' && product.normal !=='') || !available)
+    const product = fakeProduct.find(product => {return product.id === parseInt(id)})
     if((available && product.smallPicture!=='' && product.albedo !=='' && product.normal !=='') || !available ){
-        await product.updateOne({available})
-        verifyAndUploadStatusSerie(product,available)
+        product.available = available
         res.json({
             msg:"status cambio",
         })
@@ -112,8 +123,8 @@ const verifyAndUploadStatusSerie = async(product,available)=>{
 
 const changeStatusIsNew = async(req,res = response) =>{
     const {id,isNew} = req.body
-    const product = await Product.findById(id)
-    await product.updateOne({isNewProduct:isNew})
+    const product = fakeProduct.find(product => {return product.id === parseInt(id)})
+    product.isNewProduct = isNew
     res.json({
         msg:`el estatus del producto ${product.name} cambio a ${isNew}`,
     })
@@ -215,10 +226,9 @@ const getProductsDB = async (query) => {
 const deleteImgProduct = async (req,res = response)=>{
     const {id,positionImg} = req.body;
     if(positionImg=== 1 || positionImg === 2){
-        const product = await Product.findById(id)
+        const product = fakeProduct.find(product => {return product.id === parseInt(id)})
         let images= product.renders
         images[positionImg]=""
-        await product.updateOne({renders:images})
         res.json({
             ok: "imagen de producto eliminada"
         })

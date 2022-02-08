@@ -9,8 +9,6 @@ router.get("/list",getCounterList)
 router.get("/list/arko",getCounterListArko)
 
 router.post('/add/:id',[
-    check("id","No es un ID valido").isMongoId(),
-    check("id","No es un ID valido").isMongoId(),
     validateCampos
 ],addPointCounter)
 

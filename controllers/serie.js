@@ -1,11 +1,11 @@
 const azure = require('azure-storage');
 const { v4: uuidv4 } = require('uuid');
 const { response } = require("express");
-const Serie = require("../models/serie");
+const { fakeSeries } = require('../database/fakeDatabase');
 
 const disableAllseries =async (req,res = response) => {
-    await Serie.updateMany({available:true},{available:false})    
-    console.log("disbaled all series")
+    const series = fakeSeries.map(serie => {return {...serie, available: false}})
+    console.log("disbaled all series", series)
     res.json({
         deshabilidtados:"todos series"
     })
@@ -14,25 +14,33 @@ const disableAllseries =async (req,res = response) => {
 
 // este NO regresa el campo "dateCreated"
 const getAllSeries =async (req,res = response) => {
-    const serie =await Serie.find({platform:"vitromex",available:true});
-    const total = await Serie.countDocuments({platform:"vitromex",available:true});
-    res.json({total,
-        serie
+    const series = fakeSeries.filter(serie => { 
+        if(serie.platform === 'vitromex' && serie.available){
+            return serie
+        }
+    })
+    res.json({
+        total: series.length,
+        series
     })
 }
 const getAllSeriesArko =async (req,res = response) => {
-    const serie =await Serie.find({platform:"arko",available:true});
-    const total = await Serie.countDocuments({platform:"arko",available:true});
-    res.json({total,
-        serie
+    const series = fakeSeries.filter(serie => { 
+        if(serie.platform === 'arko' && serie.available){
+            return serie
+        }
+    })
+    res.json({
+        total: series.length,
+        series
     })
 }
 
 // este regresa el campo "dateCreated"
 const getAllSeriesCMS =async (req,res = response) => {
-    const ie =await Serie.find();
+    // const ie =await Serie.find();
     const serie = []
-    ie.forEach(elm=>{
+    fakeSeries.forEach(elm=>{
         serie.push( {
             name:elm.name,               
             img:elm.img,
@@ -41,13 +49,15 @@ const getAllSeriesCMS =async (req,res = response) => {
             render:elm.render
          } )
      })
-    const total = await Serie.countDocuments();
-    res.json({total,
-       serie
+    const total = fakeSeries.length
+    res.json({
+        total,
+        serie
     })
 }
+
 const getAllSeriesCMSArko =async (req,res = response) => {
-    const ie =await Serie.find({platform:"arko"});
+    const ie = fakeSeries.filter(serie => {return serie.platform === 'arko'})
     const serie = []
     ie.forEach(elm=>{
         serie.push( {
@@ -58,8 +68,9 @@ const getAllSeriesCMSArko =async (req,res = response) => {
             render:elm.render
          } )
      })
-    const total = await Serie.countDocuments();
-    res.json({total,
+    const total = fakeSeries.length
+    res.json({
+        total,
        serie
     })
 }
