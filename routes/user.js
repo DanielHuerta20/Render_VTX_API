@@ -3,7 +3,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 const { userDelete, saveUser, getUsers } = require('../controllers/user');
 const {validateCampos} = require('../middlewares/validateCampos');
-const {emailExist,emailExistArko,exitUserById} = require('../helpers/db-validators')
+const {emailExist,exitUserById} = require('../helpers/db-validators')
 
 const router = Router();
 
