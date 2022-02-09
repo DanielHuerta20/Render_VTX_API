@@ -8,43 +8,34 @@ const fakeUser = [
         email: 'luis@inmersys.com',
         password: '1234',
         profession: 'arquitecto',
-        img: 'imagen',
         country: 'mexico',
         city: 'mexico',
-        platform: 'vitromex',
         state: true,
-        favorites: [],
-        dateUserCreated: 'create'
+        dateUserCreated: new Date().toISOString().slice(0,10)
     },
     {
         id: 2,
         name: 'Isai',
         lastname: 'ocampo',
         email: 's2@live.com',
-        password: '11111111',
+        password: '111111',
         profession: 'diseñador',
-        img: 'imagen',
         country: 'mexico',
         city: 'mexico',
-        platform: 'arko',
         state: true,
-        favorites: [],
-        dateUserCreated: 'create'
+        dateUserCreated: new Date().toISOString().slice(0,10)
     },
     {
         id: 3,
         name: 'Angel',
         lastname: 'ocampo',
-        email: 's2@live.com',
+        email: 'luis@live.com',
         password: '111111',
         profession: 'otro',
-        img: 'imagen',
         country: 'mexico',
         city: 'mexico',
-        platform: 'vitromex',
         state: true,
-        favorites: [],
-        dateUserCreated: 'create'
+        dateUserCreated: new Date().toISOString().slice(0,10)
     },
     {
         id: 4,
@@ -53,13 +44,10 @@ const fakeUser = [
         email: 'prueba1@inmersys.com',
         password: '1234',
         profession: 'diseñador',
-        img: 'imagen',
         country: 'mexico',
         city: 'mexico',
-        platform: 'arko',
         state: false,
-        favorites: [],
-        dateUserCreated: 'create'
+        dateUserCreated: new Date().toISOString().slice(0,10)
     }
 ]
 
