@@ -3,6 +3,7 @@ const cors = require("cors");
 // const { dbConnection } = require("../database/config");
 // const { getDB, ActualizarDB } = require("../Agenda/getDB");
 const fileUpload = require("express-fileupload");
+const { dbConectionMysql } = require("../database/mysqlConfig");
 
 class Server {
   constructor() {
@@ -23,7 +24,7 @@ class Server {
     this.testPath = "/api/test";
 
     // conectar a DB
-    // this.conectDB();
+    this.conectDB();
 
     // middlewares
     this.middlewares();
@@ -32,10 +33,11 @@ class Server {
   }
 
   async conectDB() {
-    await dbConnection();
+    await dbConectionMysql();
+    // await dbConnection();
     // actualizar DB servicio de oracle
-    getDB.start();
-    ActualizarDB();
+    // getDB.start();
+    // ActualizarDB();
   }
 
   middlewares() {
