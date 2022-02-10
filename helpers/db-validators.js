@@ -1,13 +1,10 @@
-// const Favorite = require('../models/favorite');
-// const Product = require('../models/product');
-// const shop = require('../models/shop');
-// const User = require('../models/user')
 
 const { fakeUser, fakeProduct, fakeShop, fakeFavorite } = require("../database/fakeDatabase");
+const { UserModel } = require("../database/mysqlConfig");
 
 
 const emailExist = async (email = "") =>{
-    const exist =  fakeUser.find(user => {return user.email === email && user.platform === "vitromex"})
+    const exist =  await UserModel.findOne({where: {email: email}})
     if(exist){
         throw new Error("Email ya registrado")
     }

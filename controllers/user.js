@@ -1,18 +1,21 @@
 const {response } = require('express') ;
 const bcryptjs = require('bcryptjs');
 const { fakeUser } = require('../database/fakeDatabase');
-// const User =require('../models/user');
+const { UserModel } = require('../database/mysqlConfig');
 
 
 
 const saveUser = async (req,res = response)=>{
     const {name,email,password,lastName,country="none",city="none"} = req.body;
+    // const user = {
+    //     ...req.body, 
+    //     id: fakeUser.length + 1,
+    //     dateUserCreated:new Date().toISOString().slice(0,10),
+    //     state: true
+    // }
 
     const user = {
-        ...req.body, 
-        id: fakeUser.length + 1,
-        dateUserCreated:new Date().toISOString().slice(0,10),
-        state: true
+        ...req.body
     }
     //
     // encriptadr password
@@ -20,19 +23,20 @@ const saveUser = async (req,res = response)=>{
     user.password = bcryptjs.hashSync(password, salt);
 
     try {
-        // await user.save();       
-        fakeUser.push(user)
+        // await user.save();
+        const userDatabase = await UserModel.create(user)
+        // fakeUser.push(user)
         res.json({
-            state:user.state,
-            favorites:user.favorites,
-            id:user.id,
-            name:user.name,
-            email:user.email,
-            lastName:user.lastName,
-            country:user.country,
-            city:user.city,
-            profession: user.profession,
-            password: user.password
+            state:userDatabase.dataValues.state,
+            favorites:userDatabase.dataValues.favorites,
+            id:userDatabase.dataValues.id,
+            name:userDatabase.dataValues.name,
+            email:userDatabase.dataValues.email,
+            lastName:userDatabase.dataValues.lastName,
+            country:userDatabase.dataValues.country,
+            city:userDatabase.dataValues.city,
+            profession: userDatabase.dataValues.profession,
+            password: userDatabase.dataValues.password
         })
     } catch (error) {
         console.log(error)
@@ -45,20 +49,8 @@ const getUsers = async (req,res=response) =>{
     const query = {state:true };
     
     const [users,total]= await Promise.all([
-        fakeUser.filter(user => {
-            if (user.state) {
-                return {
-                    ...user
-                }
-            }
-        }),
-        fakeUser.filter(user => {
-            if (user.state) {
-                return {
-                    ...user
-                }
-            }
-        }).length
+        UserModel.findAll(),
+        UserModel.count()
     ])
 
     res.json({
