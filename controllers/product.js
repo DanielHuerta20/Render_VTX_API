@@ -2,12 +2,14 @@ const azure = require('azure-storage');
 const { v4: uuidv4 } = require('uuid');
 const {response } = require('express') ;
 const { fakeProduct } = require('../database/fakeDatabase');
+const { ProductModel } = require('../database/mysqlConfig');
 
 
 const productGet =async (req,res = response) => {
     const { limit = 5,start = 0 } = req.query;
     const query = {available:true};
-    const products = fakeProduct.filter(product => {return product.available})
+    // const products = fakeProduct.filter(product => {return product.available})
+    const productsDataBase = await ProductModel.findAll()
     // const [products,total]= await Promise.all([
     //     Product.find(query)
     //     .skip(Number(start))
@@ -16,9 +18,9 @@ const productGet =async (req,res = response) => {
     // ])
     
     res.json({
-        AlltotalProducts:products.length,
-        toalProductsInThisQuery:products.length,
-        products
+        AlltotalProducts:productsDataBase.length,
+        toalProductsInThisQuery:productsDataBase.length,
+        products:productsDataBase
     })
 }
 const disableAll =async (req,res = response) => {

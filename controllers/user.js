@@ -26,7 +26,7 @@ const saveUser = async (req,res = response)=>{
         // await user.save();
         const userDatabase = await UserModel.create(user)
         // fakeUser.push(user)
-        res.json({
+        res.json({            
             state:userDatabase.dataValues.state,
             favorites:userDatabase.dataValues.favorites,
             id:userDatabase.dataValues.id,

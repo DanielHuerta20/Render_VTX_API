@@ -1,13 +1,11 @@
 const cron = require('node-cron');
 const fetch = require('node-fetch');
 const Product = require('../models/product')
-const Favorite = require('../models/favorite')
-const Shop = require('../models/shop');
-const Counter = require('../models/counter')
-const Serie = require('../models/serie')
-const Typologies = require('../models/typologies')
-const Format = require("../models/format");
-const format = require('../models/format');
+// const Shop = require('../models/shop');
+// const Serie = require('../models/serie')
+// const Typologies = require('../models/typologies')
+// const Format = require("../models/format");
+const { ProductModel } = require('../database/mysqlConfig');
 
 const getDB = cron.schedule('0 1 * * *', () => {
     ActualizarDB();
@@ -25,43 +23,32 @@ const getDB = cron.schedule('0 1 * * *', () => {
         .then(async(response)=>{
           console.log(response)
 
-            //   console.log(response.result.P_InfoProductos_RowSet)
-            const productsOracle = filterDataNotDuplicate(response.result.P_InfoProductos_RowSet,"CODIGO_ITEM");
+            // console.log(response.result.P_InfoProductos_RowSet)
+            const productsOracle = filterDataNotDuplicate(response.db.result.P_InfoProductos_RowSet,"CODIGO_ITEM");
 
-            const productsOracleSeries = filterDataNotDuplicateSeries(response.result.P_InfoProductos_RowSet);
-            await addSeries(productsOracleSeries);
+            // const productsOracleSeries = filterDataNotDuplicateSeries(response.result.P_InfoProductos_RowSet);
+            // await addSeries(productsOracleSeries);
 
-            const productsOracleTypologies = filterDataNotDuplicateTypologies(response.result.P_InfoProductos_RowSet);
-            await addTypologies(productsOracleTypologies);
+            // const productsOracleTypologies = filterDataNotDuplicateTypologies(response.result.P_InfoProductos_RowSet);
+            // await addTypologies(productsOracleTypologies);
 
-            const productOracleFormats = filterDataNotDuplicate(response.result.P_InfoProductos_RowSet,"FORMATO");
-            await addFormats(productOracleFormats);
+            // const productOracleFormats = filterDataNotDuplicate(response.result.P_InfoProductos_RowSet,"FORMATO");
+            // await addFormats(productOracleFormats);
 
            await productsOracle.forEach(async (element) => {
               existProduct(element.CODIGO_ITEM, async (exist)=>{
                 if(!exist){
                   // tomar el fomato correcto si es que existe
                   let formatoProduct = element.FORMATO
-                  const formatExist = await Format.findOne({format:element.FORMATO})
-                  if(formatExist){
-                    formatoProduct = formatExist.rounded
-                  }
+                  // const formatExist = await Format.findOne({format:e-lement.FORMATO})
+                  // if(formatExist){
+                  //   formatoProduct = formatExist.rounded
+                  // }
                   // 
                   const format = getFormatProduct(element,formatoProduct)
-                  const prod = new Product({...format});
-                  const pr = await prod.save()
-                  console.log(`agregado: ${pr._id}`)
-                  const fav = new Favorite({_id:pr.id,
-                    total:0,
-                    dates:[],
-                    platform:(element.DESC_MARCA ==="VITROMEX")? 'vitromex':'arko',
-                  })
-                  await fav.save();
-                  const count = new Counter({_id:pr.id,
-                    total:0,dates:[],
-                    platform:(element.DESC_MARCA ==="VITROMEX")? 'vitromex':'arko',
-                  })
-                  await count.save();
+                  console.log(format)
+                  const product = await ProductModel.create(format)
+                  // console.log(`agregado: ${product.dataValues}`)
           }
           else{                                
           }
@@ -72,42 +59,43 @@ const getDB = cron.schedule('0 1 * * *', () => {
 
        // TODO: aqui modificar hacia donde apunta el link para las tiendas 
       // solo cambiar el link 
-      fetch(`${process.env.GET_TIENDAS}`,{
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then(res=>res.json())
-      .then(async(response)=>{
-        const tiendas = response.data
-        if(tiendas){
-          await Shop.collection.deleteMany({})
-          tiendas.forEach(async (element)=>{
-            const assaraydistribuid = element.Distribuidor.split('-')
-            const name = assaraydistribuid[0] + ' - ' + element.Nombre
-            const store = new Shop({
-              name:name,
-              country:element.pais,
-              state:element.Estado,
-              city:element.Municipio,
-              suburb: element.colonia,
-              street: element.Calle,
-              num: element.numero,
-              phone: element.TelefonoTienda,
-              status: ((element.Latitud!='' && element.Longitud!='') && element.Nombre!='')?true:false,
-              lat: element.Latitud,
-              lng: element.Longitud,
-              dateCreated:new Date().toISOString().slice(0,10),
-            })
-            await store.save()
-            console.log("tienda guardada:"+ name)
-          })
-        }
-      })
+      // fetch(`${process.env.GET_TIENDAS}`,{
+      //   method: 'GET',
+      //   headers: { 'Content-Type': 'application/json' },
+      // })
+      // .then(res=>res.json())
+      // .then(async(response)=>{
+      //   const tiendas = response.data
+      //   if(tiendas){
+      //     await Shop.collection.deleteMany({})
+      //     tiendas.forEach(async (element)=>{
+      //       const assaraydistribuid = element.Distribuidor.split('-')
+      //       const name = assaraydistribuid[0] + ' - ' + element.Nombre
+      //       const store = new Shop({
+      //         name:name,
+      //         country:element.pais,
+      //         state:element.Estado,
+      //         city:element.Municipio,
+      //         suburb: element.colonia,
+      //         street: element.Calle,
+      //         num: element.numero,
+      //         phone: element.TelefonoTienda,
+      //         status: ((element.Latitud!='' && element.Longitud!='') && element.Nombre!='')?true:false,
+      //         lat: element.Latitud,
+      //         lng: element.Longitud,
+      //         dateCreated:new Date().toISOString().slice(0,10),
+      //       })
+      //       await store.save()
+      //       console.log("tienda guardada:"+ name)
+      //     })
+      //   }
+      // })
 
   }
   
   const existProduct= async(id, callback)=>{
-    const exist = await Product.findOne({idFromOracle:id})
+    // const exist = await Product.findOne({idFromOracle:id})
+    const exist =false
     if(exist)
     callback(true) ;
     else  callback(false);

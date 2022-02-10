@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 // const { dbConnection } = require("../database/config");
-// const { getDB, ActualizarDB } = require("../Agenda/getDB");
+const { getDB, ActualizarDB } = require("../Agenda/getDB");
 const fileUpload = require("express-fileupload");
 const { dbConectionMysql } = require("../database/mysqlConfig");
 
