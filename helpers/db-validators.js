@@ -1,6 +1,6 @@
 
 const { fakeUser, fakeProduct, fakeShop, fakeFavorite } = require("../database/fakeDatabase");
-const { UserModel } = require("../database/mysqlConfig");
+const { UserModel, ProductModel } = require("../database/mysqlConfig");
 
 
 const emailExist = async (email = "") =>{
@@ -23,8 +23,13 @@ const exitUserById =async ( id ) => {
     }
 }
 const exitProductById =async ( id ) => {
-    const exist = fakeProduct.find(product => {return product.id === parseInt(id)})
-    if(!exist){
+    const exist =await ProductModel.findAll({
+        where: {
+          id: id,
+          available: true
+        }
+      });
+    if(!exist || exist.length === 0){
         throw new Error(`El producto con el id no existe ${id}`);
     }
 }

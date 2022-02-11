@@ -6,23 +6,18 @@ const { ProductModel } = require('../database/mysqlConfig');
 
 
 const productGet =async (req,res = response) => {
-    const { limit = 5,start = 0 } = req.query;
-    const query = {available:true};
-    // const products = fakeProduct.filter(product => {return product.available})
-    const productsDataBase = await ProductModel.findAll()
-    // const [products,total]= await Promise.all([
-    //     Product.find(query)
-    //     .skip(Number(start))
-    //     .limit(Number(limit)),
-    //     Product.countDocuments(query),
-    // ])
-    
+    const productsDataBase = await ProductModel.findAll({
+        where: {
+        available: true
+        }}
+        )
     res.json({
         AlltotalProducts:productsDataBase.length,
         toalProductsInThisQuery:productsDataBase.length,
         products:productsDataBase
     })
 }
+
 const disableAll =async (req,res = response) => {
     const products = fakeProduct.map(product => {
         return {
@@ -37,49 +32,55 @@ const disableAll =async (req,res = response) => {
 }
 
 
-const getProductsArko= async (req,res=response)=>{
-    const products =  fakeProduct.filter(product => {
-        if(product.available && product.branding === 'ARKO'){
-            return product
-        }
-    })
-    res.json({
-        toalProductsInThisQuery:products.length,
-        products
-    })
-}
-const getProductsVitromexCMS = async (req,res=response)=>{
-    const products =  fakeProduct.filter(product => {return product.branding === 'VITROMEX'})
-    res.json({
-        toalProductsInThisQuery:products.length,
-        products
-    })
-}
+// const getProductsArko= async (req,res=response)=>{
+//     const products =  fakeProduct.filter(product => {
+//         if(product.available && product.branding === 'ARKO'){
+//             return product
+//         }
+//     })
+//     res.json({
+//         toalProductsInThisQuery:products.length,
+//         products
+//     })
+// }
+// const getProductsVitromexCMS = async (req,res=response)=>{
+//     const products =  fakeProduct.filter(product => {return product.branding === 'VITROMEX'})
+//     res.json({
+//         toalProductsInThisQuery:products.length,
+//         products
+//     })
+// }
 
-const getProductsARKOCMS = async (req,res=response)=>{
-    const products =  fakeProduct.filter(product => {return product.branding === 'ARKO'})
-    res.json({
-        toalProductsInThisQuery:products.length,
-        products
-    })
-}
+// const getProductsARKOCMS = async (req,res=response)=>{
+//     const products =  fakeProduct.filter(product => {return product.branding === 'ARKO'})
+//     res.json({
+//         toalProductsInThisQuery:products.length,
+//         products
+//     })
+// }
 
 
-const getProductsVitromex= async (req,res=response)=>{
-    const products =  fakeProduct.filter(product => {
-        if(product.available && product.branding === 'VITROMEX'){
-            return product
-        }
-    })   
-    res.json({
-        toalProductsInThisQuery:products.length,
-        products
-    })
-}
+// const getProductsVitromex= async (req,res=response)=>{
+//     const products =  fakeProduct.filter(product => {
+//         if(product.available && product.branding === 'VITROMEX'){
+//             return product
+//         }
+//     })   
+//     res.json({
+//         toalProductsInThisQuery:products.length,
+//         products
+//     })
+// }
 
 const getProductById = async(req,res = response) => {
     const {id} = req.params;
-    const product = fakeProduct.find(product => {return product.id === parseInt(id)})
+    // const product = fakeProduct.find(product => {return product.id === parseInt(id)})
+    const product  = await ProductModel.findAll({
+        where: {
+          id: id,
+          available: true
+        }
+      });
     res.json({
         product
     })
@@ -245,11 +246,7 @@ const deleteImgProduct = async (req,res = response)=>{
 
 module.exports={
     productGet,
-    getProductsArko,
-    getProductsVitromex,
     getProductById,
-    getProductsVitromexCMS,
-    getProductsARKOCMS,
     changeStatusProduct,
     uploadProductImg,
     uploadProductImgRender,

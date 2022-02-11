@@ -2,11 +2,11 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const {
   productGet,
-  getProductsArko,
-  getProductsVitromex,
+  
+  
   getProductById,
-  getProductsVitromexCMS,
-  getProductsARKOCMS,
+  
+  
   changeStatusProduct,
   changeStatusIsNew,
   deleteImgProduct,
@@ -19,13 +19,6 @@ const { validateJwt } = require("../middlewares/validateJwt");
 const router = Router();
 
 router.get("/", productGet);
-
-router.get("/arko", getProductsArko);
-router.get("/arko/cms", getProductsARKOCMS);
-
-router.get("/vitromex", getProductsVitromex);
-router.get("/vitromex/cms", getProductsVitromexCMS);
-
 router.post(
   "/chagestatus",
   [
