@@ -2,7 +2,7 @@ const azure = require('azure-storage');
 const { v4: uuidv4 } = require('uuid');
 const {response } = require('express') ;
 const { fakeProduct } = require('../database/fakeDatabase');
-const { ProductModel } = require('../database/mysqlConfig');
+const { ProductModel,RenderModel, ThumbnailModel } = require('../database/mysqlConfig');
 
 
 const productGet =async (req,res = response) => {
@@ -11,11 +11,96 @@ const productGet =async (req,res = response) => {
         available: true
         }}
         )
-    res.json({
-        AlltotalProducts:productsDataBase.length,
-        toalProductsInThisQuery:productsDataBase.length,
-        products:productsDataBase
+        onGetRendersToProducts(productsDataBase,(productsWhitRender)=>{
+            onGetThumbnailsToProducts(productsWhitRender,(products)=>{
+                res.json({
+                    AlltotalProducts:productsDataBase.length,
+                    toalProductsInThisQuery:productsDataBase.length,
+                    products:products
+                })
+            })
+        })
+}
+
+const onGetRendersToProducts =  async (productsDataBase,callback)=>{
+    const productsWhitImg = await Promise.all(
+        productsDataBase.map( async (product)=>{
+            const renders = await RenderModel.findAll({
+                where:{
+                    productId:product.id
+                }
+            })
+            if(renders.length>0){            
+                return {...product.dataValues,renders:[...renders]}
+            }
+            else{
+                return product
+            }
+        })
+    )
+    callback(productsWhitImg)
+}
+const onGetThumbnailsToProducts =  async (productsDataBase,callback)=>{
+    const productsWhitImg = await Promise.all(
+        productsDataBase.map( async (product)=>{
+            const thumbnail = await ThumbnailModel.findAll({
+                where:{
+                    productId:product.id
+                }
+            })
+            if(thumbnail.length>0){            
+                return {...product,thumbnail:[...thumbnail]}
+            }
+            else{
+                return product
+            }
+        })
+    )
+    callback(productsWhitImg)
+}
+
+const addRenderToProduct = async (req,res = response) => {
+    const {id,url} = req.body
+    const productToAddRender = await ProductModel.findAll({
+        where:{
+            id,
+        }
     })
+    if(productToAddRender){
+        const renderAdd = await RenderModel.create({url,productId:id})
+        res.json({
+            renderAdd,
+            id,url,
+            productToAddRender
+        })
+    }
+    else{
+        res.status(404).json({
+            error:'product not found'
+        })
+    }
+}
+
+const addThumbnailToProduct = async (req,res = response) => {
+    const {id,url} = req.body
+    const productToAddRender = await ProductModel.findAll({
+        where:{
+            id,
+        }
+    })
+    if(productToAddRender){
+        const renderAdd = await ThumbnailModel.create({url,productId:id})
+        res.json({
+            renderAdd,
+            id,url,
+            productToAddRender
+        })
+    }
+    else{
+        res.status(404).json({
+            error:'product not found'
+        })
+    }
 }
 
 const disableAll =async (req,res = response) => {
@@ -218,14 +303,6 @@ const uploadAzureImg = async (file,blob, callBack)=>{
     }
 }
 
-const getProductsDB = async (query) => {
-    const [products,total]= await Promise.all([
-        Product.find(query),
-        Product.countDocuments(query),
-    ]);
-    return [products,total];
-}
-
 const deleteImgProduct = async (req,res = response)=>{
     const {id,positionImg} = req.body;
     if(positionImg=== 1 || positionImg === 2){
@@ -246,6 +323,8 @@ const deleteImgProduct = async (req,res = response)=>{
 
 module.exports={
     productGet,
+    addThumbnailToProduct,
+    addRenderToProduct,
     getProductById,
     changeStatusProduct,
     uploadProductImg,

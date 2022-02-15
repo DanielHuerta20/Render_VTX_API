@@ -11,6 +11,8 @@ const {
   changeStatusIsNew,
   deleteImgProduct,
   disableAll,
+  addRenderToProduct,
+  addThumbnailToProduct,
 } = require("../controllers/product");
 const { exitProductById } = require("../helpers/db-validators");
 const { validateCampos } = require("../middlewares/validateCampos");
@@ -18,7 +20,22 @@ const { validateJwt } = require("../middlewares/validateJwt");
 
 const router = Router();
 
+
+// used
 router.get("/", productGet);
+
+router.post("/addrender",[
+  check("id").custom(exitProductById),
+  validateCampos
+],addRenderToProduct)
+
+router.post("/addthumbnail",[
+  check("id").custom(exitProductById),
+  validateCampos
+],addThumbnailToProduct)
+
+
+// 
 router.post(
   "/chagestatus",
   [
