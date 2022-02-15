@@ -7,18 +7,10 @@ const { UserModel } = require('../database/mysqlConfig');
 
 const saveUser = async (req,res = response)=>{
     const {name,email,password,lastName,country="none",city="none"} = req.body;
-    // const user = {
-    //     ...req.body, 
-    //     id: fakeUser.length + 1,
-    //     dateUserCreated:new Date().toISOString().slice(0,10),
-    //     state: true
-    // }
-
     const user = {
         ...req.body
     }
     //
-    // encriptadr password
     const salt = bcryptjs.genSaltSync();
     user.password = bcryptjs.hashSync(password, salt);
 

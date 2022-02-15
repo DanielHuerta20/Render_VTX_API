@@ -1,42 +1,45 @@
 const { response } = require("express");
 const bcryptjs = require("bcryptjs");
 const { fakeUser } = require("../database/fakeDatabase");
+const { UserModel } = require("../database/mysqlConfig");
 
 const loginGlobal = async (req, res = response) => {
   const { email, password } = req.body;
   try {
     // verificar si el email existe
-    const user = fakeUser.find(user => {return user.email === email})
+    // const user = fakeUser.find(user => {return user.email === email})
+    const user = await UserModel.findOne({
+      where: { email}
+    })
     if (!user) {
       return res.status(400).json({
-        msg: "Usuario/password no son correctos",
+        msg: "Usuario/password no son correctos x",
       });
     }
-
+    const userExist = user.dataValues
     // usuario activos
-    if (!user.state) {
+    if (!userExist.state) {
       return res.status(400).json({
-        msg: "Usuario/password no son correctos",
+        msg: "Usuario/password no son correctos y",
       });
     }
 
     // verificar password
-    const isValidPassword = bcryptjs.compareSync(password, user.password)
+    const isValidPassword = bcryptjs.compareSync(password, userExist.password)
     // const isValidPassword = password === user.password;
     if (!isValidPassword) {
       return res.status(400).json({
-        msg: "Usuario/password no son correctos",
+        msg: "Usuario/password no son correctos z",
       });
     }
-
     // // generar JWT
     return res.json({
-      state: user.state,
-      favorites: user.favorites,
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      lastName: user.lastName,
+      state: userExist.state,
+      favorites: userExist.favorites,
+      id: userExist.id,
+      name: userExist.name,
+      email: userExist.email,
+      lastName: userExist.lastName,
     });
 
   } catch (error) {
@@ -50,7 +53,9 @@ const loginGlobal = async (req, res = response) => {
 const restorePassword = async (req, res = response) => {
   try {
     const { email, password } = req.body;
-    const user = fakeUser.find(user => {return user.email === email})
+    const user = await UserModel.findOne({
+      where: { email}
+    })
     if (!user) {
       return res.status(400).json({
         msg: "Ususario/password no son correctos",
@@ -58,8 +63,8 @@ const restorePassword = async (req, res = response) => {
     }
     // Encriptar
     const salt = bcryptjs.genSaltSync();
-    user.password = bcryptjs.hashSync(password, salt);
-
+    await user.update({password:bcryptjs.hashSync(password, salt)})
+    await user.save();
     res.json(user);
   } catch (error) {
     console.log(error);
