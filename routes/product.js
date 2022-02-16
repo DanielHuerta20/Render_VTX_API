@@ -24,15 +24,9 @@ const router = Router();
 // used
 router.get("/", productGet);
 
-router.post("/addrender",[
-  check("id").custom(exitProductById),
-  validateCampos
-],addRenderToProduct)
+router.post("/addrender",addRenderToProduct)
 
-router.post("/addthumbnail",[
-  check("id").custom(exitProductById),
-  validateCampos
-],addThumbnailToProduct)
+router.post("/addthumbnail",addThumbnailToProduct)
 
 
 // 
