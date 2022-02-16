@@ -5,7 +5,7 @@ const Product = require('../models/product')
 // const Serie = require('../models/serie')
 // const Typologies = require('../models/typologies')
 // const Format = require("../models/format");
-const { ProductModel } = require('../database/mysqlConfig');
+const { ProductModel, SerieModel } = require('../database/mysqlConfig');
 
 const getDB = cron.schedule('0 1 * * *', () => {
     ActualizarDB();
@@ -21,39 +21,31 @@ const getDB = cron.schedule('0 1 * * *', () => {
         })
         .then((res) =>res.json())
         .then(async(response)=>{
-          console.log(response)
+          // console.log(response)
 
             // console.log(response.result.P_InfoProductos_RowSet)
             const productsOracle = filterDataNotDuplicate(response.db.result.P_InfoProductos_RowSet,"CODIGO_ITEM");
 
-            // const productsOracleSeries = filterDataNotDuplicateSeries(response.result.P_InfoProductos_RowSet);
-            // await addSeries(productsOracleSeries);
+            const productsOracleSeries = filterDataNotDuplicateSeries(response.db.result.P_InfoProductos_RowSet);
+            await addSeries(productsOracleSeries);
 
             // const productsOracleTypologies = filterDataNotDuplicateTypologies(response.result.P_InfoProductos_RowSet);
             // await addTypologies(productsOracleTypologies);
 
             // const productOracleFormats = filterDataNotDuplicate(response.result.P_InfoProductos_RowSet,"FORMATO");
             // await addFormats(productOracleFormats);
-
-           await productsOracle.forEach(async (element) => {
-              existProduct(element.CODIGO_ITEM, async (exist)=>{
+            await Promise.all(
+              productsOracle.map( async(element)=>{
+                const exist =await ProductModel.findOne({
+                  where: {idFromOracle:element.CODIGO_ITEM}
+                })
                 if(!exist){
-                  // tomar el fomato correcto si es que existe
                   let formatoProduct = element.FORMATO
-                  // const formatExist = await Format.findOne({format:e-lement.FORMATO})
-                  // if(formatExist){
-                  //   formatoProduct = formatExist.rounded
-                  // }
-                  // 
                   const format = getFormatProduct(element,formatoProduct)
-                  console.log(format)
-                  const product = await ProductModel.create(format)
-                  // console.log(`agregado: ${product.dataValues}`)
-          }
-          else{                                
-          }
-              })
-              });
+                   await ProductModel.create(format)
+                }
+               })
+             )
       }).catch(err =>console.log(err))
       console.log(`obteniendo tiendas de: ${process.env.GET_TIENDAS}`);
 
@@ -180,21 +172,38 @@ const getDB = cron.schedule('0 1 * * *', () => {
   }
 
   const addSeries =async (elements) => {
-    elements.forEach(async (element) => {
-      const exist =await Serie.findOne({name:element.SERIE})
-      if(!exist){
-        const serie = new Serie({
+    await Promise.all(
+      elements.map( async (element)=>{
+        const exist =await SerieModel.findOne({
+              where: {name:element.SERIE}
+        })
+        if(!exist){
+        await SerieModel.create({
           name:element.SERIE,
+          available:true,
           typologie:element.DESC_TIPOLOGIA,
           platform:(element.DESC_MARCA ==="VITROMEX")? 'vitromex':'arko',
           img:"",
-          render:"",
-          dateCreated:new Date().toISOString().slice(0,10)
         })
-        await  serie.save()
         console.log(`Serie guardada: ${element.SERIE}`)
-      }      
-    })
+      } 
+      })
+    )
+    // elements.forEach(async (element) => {
+    //   const exist =await SerieModel.findOne({
+    //     where: {name:'as'}
+    //   })
+      // console.log(exist)
+      // if(!exist){
+      //   await SerieModel.create({
+      //     name:element.SERIE,
+      //     available:true,
+      //     typologie:element.DESC_TIPOLOGIA,
+      //     platform:(element.DESC_MARCA ==="VITROMEX")? 'vitromex':'arko',
+      //     img:"",
+      //   })
+      //   console.log(`Serie guardada: ${element.SERIE}`)
+      // }   
   }
 
   const addTypologies =async (elements) => {

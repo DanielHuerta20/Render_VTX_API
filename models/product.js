@@ -10,6 +10,7 @@ const Product = (sequelize) => {
     dateCreated: { type: DataTypes.DATEONLY    },
     sized: { type: DataTypes.STRING },
     family: { type: DataTypes.STRING },
+    idFromOracle: { type: DataTypes.STRING },
     serie:{  type: DataTypes.STRING},
     color: { type: DataTypes.STRING },
     finish: { type: DataTypes.STRING },
