@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const Format = require("../models/format");
 const Product = require("../models/product");
 const Render = require("../models/render");
 const Serie = require("../models/serie");
@@ -20,6 +21,7 @@ const ProductModel  = Product(sequelize);
 const RenderModel = Render(sequelize);
 const ThumbnailModel = Thumbnail(sequelize);
 const SerieModel = Serie(sequelize);
+const FormatModel = Format(sequelize);
 
 const dbConectionMysql = async () => {
   try {
@@ -35,6 +37,7 @@ const dbConectionMysql = async () => {
 
 module.exports = {
   UserModel,
+  FormatModel,
   ProductModel,
   RenderModel,
   ThumbnailModel,

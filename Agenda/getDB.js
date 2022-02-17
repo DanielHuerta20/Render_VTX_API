@@ -5,7 +5,7 @@ const Product = require('../models/product')
 // const Serie = require('../models/serie')
 // const Typologies = require('../models/typologies')
 // const Format = require("../models/format");
-const { ProductModel, SerieModel } = require('../database/mysqlConfig');
+const { ProductModel, SerieModel, FormatModel } = require('../database/mysqlConfig');
 
 const getDB = cron.schedule('0 1 * * *', () => {
     ActualizarDB();
@@ -32,16 +32,21 @@ const getDB = cron.schedule('0 1 * * *', () => {
             // const productsOracleTypologies = filterDataNotDuplicateTypologies(response.result.P_InfoProductos_RowSet);
             // await addTypologies(productsOracleTypologies);
 
-            // const productOracleFormats = filterDataNotDuplicate(response.result.P_InfoProductos_RowSet,"FORMATO");
-            // await addFormats(productOracleFormats);
+            const productOracleFormats = filterDataNotDuplicate(response.db.result.P_InfoProductos_RowSet,"FORMATO");
+            await addFormats(productOracleFormats);
             await Promise.all(
               productsOracle.map( async(element)=>{
                 const exist =await ProductModel.findOne({
                   where: {idFromOracle:element.CODIGO_ITEM}
                 })
                 if(!exist){
-                  let formatoProduct = element.FORMATO
-                  const format = getFormatProduct(element,formatoProduct)
+                  // let formatoProduct = element.FORMATO
+                  const formatoProduct = await FormatModel.findOne({
+                    where:{
+                      sizedDefault:element.FORMATO,
+                    }
+                  })
+                  const format = getFormatProduct(element,formatoProduct.format)
                    await ProductModel.create(format)
                 }
                })
@@ -145,6 +150,7 @@ const getDB = cron.schedule('0 1 * * *', () => {
         idFromOracle:elem.CODIGO_ITEM,
         available:false, //TODO: cambiar  falso siempre que llega uno nuevo
         description:elem.DESCRIPTION,
+        rectified:elem.DESCRIPTION.indexOf('RECTIFICADO')>=1?true:false,
         name:name.trim(),
         albedo:"",
         normal:"",
@@ -223,17 +229,32 @@ const getDB = cron.schedule('0 1 * * *', () => {
   }
 
   const addFormats =async(elements)=>{
-    elements.forEach(async (element) => {
-      const exist =await Format.findOne({format:element.FORMATO})
-      if(!exist){
-        const format = new Format({
-          format:element.FORMATO,
-          rounded:element.FORMATO
+    await Promise.all(
+      elements.map(async(element)=>{
+        const format =await FormatModel.findOne({
+          where: {
+            format:element.FORMATO
+          }
         })
-        await  format.save()
-        console.log(`formato guardada: ${element.FORMATO}`)
-      }      
-    })
+        if(!format){
+          await FormatModel.create({
+            format:element.FORMATO,
+            sizedDefault:element.FORMATO,
+          })
+        }
+      })
+    )
+    // elements.forEach(async (element) => {
+    //   const exist =await Format.findOne({format:element.FORMATO})
+    //   if(!exist){
+    //     const format = new Format({
+    //       format:element.FORMATO,
+    //       rounded:element.FORMATO
+    //     })
+    //     await  format.save()
+    //     console.log(`formato guardada: ${element.FORMATO}`)
+    //   }      
+    // })
   }
 
 module.exports ={
