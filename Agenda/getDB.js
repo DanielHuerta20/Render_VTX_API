@@ -35,6 +35,7 @@ const getDB = cron.schedule('0 1 * * *', () => {
             const productOracleFormats = filterDataNotDuplicate(response.db.result.P_InfoProductos_RowSet,"FORMATO");
             await addFormats(productOracleFormats);
             await Promise.all(
+              
               productsOracle.map( async(element)=>{
                 const exist =await ProductModel.findOne({
                   where: {idFromOracle:element.CODIGO_ITEM}
