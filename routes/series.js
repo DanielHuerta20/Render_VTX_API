@@ -15,7 +15,7 @@ router.get("/", getAllSeries);
 
 router.post("/uploadimg",uploadSerieImg)
 
-router.get("/products-series",getProductsPerSerie)
+router.post("/products-series",getProductsPerSerie)
 
 router.get("/disabledall", [], disableAllseries);
 
