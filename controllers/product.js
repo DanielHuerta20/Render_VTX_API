@@ -103,6 +103,30 @@ const addThumbnailToProduct = async (req,res = response) => {
     }
 }
 
+const getProductById = async(req,res = response) => {
+    const {id} = req.params;
+    const product  = await ProductModel.findAll({
+        where: {
+          id: id,
+          available: true
+        }
+      });
+    
+      const renders =  await RenderModel.findAll({
+        where:{
+            productId:id
+        }
+    })
+      const thum =  await ThumbnailModel.findAll({
+        where:{
+            productId:id
+        }
+    })
+   const finalData = {...product[0].dataValues,renders : [...renders],thumbnail:[...thum]}
+    
+    res.json(finalData)
+}
+
 const disableAll =async (req,res = response) => {
     const products = fakeProduct.map(product => {
         return {
@@ -157,19 +181,6 @@ const disableAll =async (req,res = response) => {
 //     })
 // }
 
-const getProductById = async(req,res = response) => {
-    const {id} = req.params;
-    // const product = fakeProduct.find(product => {return product.id === parseInt(id)})
-    const product  = await ProductModel.findAll({
-        where: {
-          id: id,
-          available: true
-        }
-      });
-    res.json({
-        product
-    })
-}
 
 const changeStatusProduct = async(req,res = response) =>{
     const {id,available} = req.body

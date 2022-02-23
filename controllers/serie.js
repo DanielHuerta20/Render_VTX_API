@@ -2,7 +2,7 @@ const azure = require('azure-storage');
 const { v4: uuidv4 } = require('uuid');
 const { response } = require("express");
 const { fakeSeries } = require('../database/fakeDatabase');
-const { SerieModel, ProductModel } = require('../database/mysqlConfig');
+const { SerieModel, ProductModel, RenderModel, ThumbnailModel } = require('../database/mysqlConfig');
 
 const disableAllseries =async (req,res = response) => {
     const series = fakeSeries.map(serie => {return {...serie, available: false}})
@@ -34,15 +34,55 @@ const getProductsPerSerie = async (req,res = response)=>{
                 available:true,
             }
         })
-        res.json(
-            products
-        )
+        onGetRendersToProducts(products,(productsWhitRenders)=>{
+            onGetThumbnailsToProducts(productsWhitRenders,(productsComplete)=>{
+                res.json(productsComplete)
+            })
+        })
     }
     else{
         res.status(404).json({
             error: 'sserie not found'
         })
     }
+}
+
+const onGetRendersToProducts =  async (productsDataBase,callback)=>{
+    const productsWhitImg = await Promise.all(
+        productsDataBase.map( async (product)=>{
+            const renders = await RenderModel.findAll({
+                where:{
+                    productId:product.id
+                }
+            })
+            if(renders.length>0){            
+                return {...product.dataValues,renders:[...renders]}
+            }
+            else{
+                return product
+            }
+        })
+    )
+    callback(productsWhitImg)
+}
+
+const onGetThumbnailsToProducts =  async (productsDataBase,callback)=>{
+    const productsWhitImg = await Promise.all(
+        productsDataBase.map( async (product)=>{
+            const thumbnail = await ThumbnailModel.findAll({
+                where:{
+                    productId:product.id
+                }
+            })
+            if(thumbnail.length>0){            
+                return {...product,thumbnail:[...thumbnail]}
+            }
+            else{
+                return product
+            }
+        })
+    )
+    callback(productsWhitImg)
 }
 
 
