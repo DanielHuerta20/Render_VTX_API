@@ -34,7 +34,7 @@ const onGetRendersToProducts =  async (productsDataBase,callback)=>{
                 return {...product.dataValues,renders:[...renders]}
             }
             else{
-                return product
+                return {...product.dataValues,renders:[]}
             }
         })
     )
@@ -52,7 +52,7 @@ const onGetThumbnailsToProducts =  async (productsDataBase,callback)=>{
                 return {...product,thumbnail:[...thumbnail]}
             }
             else{
-                return product
+                return {...product,thumbnail:[]}
             }
         })
     )
