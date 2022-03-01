@@ -20,6 +20,7 @@ class Server {
     this.seriesPath = "/api/series";
     this.analyticsPath = "/api/analytics";
     this.formatsPath = "/api/formats";
+    this.files = "/api/files"
     // router testing
     this.testPath = "/api/test";
 
@@ -87,6 +88,7 @@ class Server {
     this.app.use(this.formatsPath, require("../routes/format"));
     this.app.use(this.shopPath, require("../routes/shop"));
     this.app.use(this.counterPath, require("../routes/counter"));
+    this.app.use(this.files, require("../routes/files"))
     // this.app.use(this.favoritePath, require("../routes/favorite"));
     // this.app.use(this.onboardingPath, require("../routes/onboarding"));
     // this.app.use(this.testPath, require("../routes/test"));

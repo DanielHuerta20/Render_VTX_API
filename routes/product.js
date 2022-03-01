@@ -2,11 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const {
   productGet,
-  
-  
   getProductById,
-  
-  
   changeStatusProduct,
   changeStatusIsNew,
   deleteImgProduct,
@@ -55,11 +51,11 @@ router.post(
 router.post(
   "/deleteimg",
   [
-    validateJwt,
-    check("id", "no tienes el id del producto").not().isEmpty(),
-    check("positionImg", "No tienes la posicion a cambiar ").not().isEmpty(),
-    check("id").custom(exitProductById),
-    validateCampos,
+    // validateJwt,
+    // check("id", "no tienes el id del producto").not().isEmpty(),
+    // check("positionImg", "No tienes la posicion a cambiar ").not().isEmpty(),
+    // check("id").custom(exitProductById),
+    // validateCampos,
   ],
   deleteImgProduct
 );
