@@ -12,7 +12,6 @@ router.get('/',getUsers)
 router.post('/',[
     check("email", "El correo no es valido").isEmail(),
     check("name", "El nombre es requerido").not().isEmpty(),
-    check("password", "la contraseña es requerida y mayor a 6 caracteres ").isLength({min:6}),
     check("lastName", "El apellido es requerido").not().isEmpty(),
     check("email").custom(emailExist),
     validateCampos

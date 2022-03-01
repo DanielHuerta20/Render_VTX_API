@@ -328,19 +328,21 @@ const deleteImgProduct = async (req,res = response)=>{
             error:"no existe la imagen"
         })
     }
-    // if(positionImg=== 1 || positionImg === 2){
-    //     const product = fakeProduct.find(product => {return product.id === parseInt(id)})
-    //     let images= product.renders
-    //     images[positionImg]=""
-    //     res.json({
-    //         ok: "imagen de producto eliminada"
-    //     })
-    // }
-    // else{
-    //     res.status(502).json({
-    //         error:"la posicion no se puede borrar"
-    //     })
-    // }
+}
+const deleteImgThumbnail = async (req,res = response)=>{
+    const {id} = req.body;
+    const img = await ThumbnailModel.findOne({
+        where: {id:id}
+    })
+    if(img){
+        await img.destroy()
+        res.json({ok:'eliminada'})
+    }
+    else{
+        res.json({
+            error:"no existe la imagen"
+        })
+    }
 }
 
 
@@ -348,6 +350,7 @@ module.exports={
     productGet,
     addThumbnailToProduct,
     addRenderToProduct,
+    deleteImgThumbnail,
     getProductById,
     changeStatusProduct,
     uploadProductImg,

@@ -9,6 +9,7 @@ const {
   disableAll,
   addRenderToProduct,
   addThumbnailToProduct,
+  deleteImgThumbnail,
 } = require("../controllers/product");
 const { exitProductById } = require("../helpers/db-validators");
 const { validateCampos } = require("../middlewares/validateCampos");
@@ -50,14 +51,14 @@ router.post(
 
 router.post(
   "/deleteimg",
-  [
-    // validateJwt,
-    // check("id", "no tienes el id del producto").not().isEmpty(),
-    // check("positionImg", "No tienes la posicion a cambiar ").not().isEmpty(),
-    // check("id").custom(exitProductById),
-    // validateCampos,
-  ],
+  [],
   deleteImgProduct
+);
+
+router.post(
+  "/deletethumbnail",
+  [],
+  deleteImgThumbnail
 );
 
 router.get("/one/:id",[
