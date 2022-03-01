@@ -315,20 +315,32 @@ const uploadAzureImg = async (file,blob, callBack)=>{
 }
 
 const deleteImgProduct = async (req,res = response)=>{
-    const {id,positionImg} = req.body;
-    if(positionImg=== 1 || positionImg === 2){
-        const product = fakeProduct.find(product => {return product.id === parseInt(id)})
-        let images= product.renders
-        images[positionImg]=""
-        res.json({
-            ok: "imagen de producto eliminada"
-        })
+    const {id} = req.body;
+    const img = await RenderModel.findOne({
+        where: {id:id}
+    })
+    if(img){
+        await img.destroy()
+        res.json({ok:'eliminada'})
     }
     else{
-        res.status(502).json({
-            error:"la posicion no se puede borrar"
+        res.json({
+            error:"no existe la imagen"
         })
     }
+    // if(positionImg=== 1 || positionImg === 2){
+    //     const product = fakeProduct.find(product => {return product.id === parseInt(id)})
+    //     let images= product.renders
+    //     images[positionImg]=""
+    //     res.json({
+    //         ok: "imagen de producto eliminada"
+    //     })
+    // }
+    // else{
+    //     res.status(502).json({
+    //         error:"la posicion no se puede borrar"
+    //     })
+    // }
 }
 
 
