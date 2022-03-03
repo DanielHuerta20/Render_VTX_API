@@ -43,7 +43,6 @@ class Server {
 
   middlewares() {
     // cors
-    this.app.use(express.static("public"))
     
     this.app.use(cors());
 
@@ -79,7 +78,6 @@ class Server {
   }
 
   routes() {
-    console.log("routes");
     this.app.use(this.usersRoutePath, require("../routes/user"));
     this.app.use(this.authPath, require("../routes/auth"));
     this.app.use(this.adminUsers, require("../routes/admin"));

@@ -11,6 +11,7 @@ const Product = (sequelize) => {
     sized: { type: DataTypes.STRING },
     family: { type: DataTypes.STRING },
     rectified : { type: DataTypes.STRING },
+    bigImg:{  type: DataTypes.STRING},
     idFromOracle: { type: DataTypes.STRING },
     serie:{  type: DataTypes.STRING},
     color: { type: DataTypes.STRING },

@@ -149,12 +149,13 @@ const getDB = cron.schedule('0 1 * * *', () => {
     return {
         dateCreated:new Date().toISOString().slice(0,10),
         idFromOracle:elem.CODIGO_ITEM,
-        available:false, //TODO: cambiar  falso siempre que llega uno nuevo
+        available:true, //TODO: cambiar  falso siempre que llega uno nuevo
         description:elem.DESCRIPTION,
         rectified:elem.DESCRIPTION.indexOf('RECTIFICADO')>=1?true:false,
         name:name.trim(),
         albedo:"",
         normal:"",
+        bigImg:'https://storagedevelopvitromex.blob.core.windows.net/storage-render/0a47acf8-2b9f-4f29-864c-cf4af579d885VITROMEX_PINAR_MOKA_36X50CM_BR_Albedo.jpg',
         roughness:(elem.BRILLO ==="BR")?'1':'0',
         smallPicture:"",        
         sized: formatoProduct,
