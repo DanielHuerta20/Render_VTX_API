@@ -58,7 +58,7 @@ const restorePassword = async (req, res = response) => {
     })
     if (!user) {
       return res.status(400).json({
-        msg: "Ususario/password no son correctos",
+        msg: "Ususario no son correctos",
       });
     }
     // Encriptar

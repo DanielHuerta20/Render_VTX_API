@@ -12,7 +12,6 @@ const uploadRender = async(req,res=response)=>{
     
     const {file} = req.files
     uploadAzureImg(file,process.env.AZURE_BOLB_CONTAINER_NAME_RENDERS,async (url)=>{
-       
         return res.json({
             msg:"ok",
             url,

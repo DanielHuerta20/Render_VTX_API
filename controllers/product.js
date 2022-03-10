@@ -80,20 +80,46 @@ const addRenderToProduct = async (req,res = response) => {
         })
     }
 }
-
-const addThumbnailToProduct = async (req,res = response) => {
+const addBigImgToProduct = async (req,res=response)=>{
     const {id,url} = req.body
-    const productToAddRender = await ProductModel.findAll({
+    const productToAddBigImg = await ProductModel.findOne({
         where:{
             id,
         }
     })
-    if(productToAddRender){
-        const renderAdd = await ThumbnailModel.create({url,productId:id})
+    if(productToAddBigImg){
+        await productToAddBigImg.update(
+            {
+                bigImg:url
+            }
+        )
+        await productToAddBigImg.save();
         res.json({
-            renderAdd,
             id,url,
-            productToAddRender
+            productToAddBigImg
+        })
+    }
+    else{
+        res.status(404).json({
+            error:'product not found'
+        })
+    }
+
+}
+
+const addThumbnailToProduct = async (req,res = response) => {
+    const {id,url} = req.body
+    const productToThumbnail = await ProductModel.findAll({
+        where:{
+            id,
+        }
+    })
+    if(productToThumbnail){
+        const thumbnailAdd = await ThumbnailModel.create({url,productId:id})
+        res.json({
+            thumbnailAdd,
+            id,url,
+            productToThumbnail
         })
     }
     else{
@@ -348,6 +374,7 @@ const deleteImgThumbnail = async (req,res = response)=>{
 
 module.exports={
     productGet,
+    addBigImgToProduct,
     addThumbnailToProduct,
     addRenderToProduct,
     deleteImgThumbnail,

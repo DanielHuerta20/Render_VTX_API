@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
+const { route } = require("express/lib/router");
 const {
   productGet,
   getProductById,
@@ -10,6 +11,7 @@ const {
   addRenderToProduct,
   addThumbnailToProduct,
   deleteImgThumbnail,
+  addBigImgToProduct,
 } = require("../controllers/product");
 const { exitProductById } = require("../helpers/db-validators");
 const { validateCampos } = require("../middlewares/validateCampos");
@@ -60,6 +62,8 @@ router.post(
   [],
   deleteImgThumbnail
 );
+
+router.post("/addbigimage",[],addBigImgToProduct)
 
 router.get("/one/:id",[
   check("id").custom(exitProductById),
