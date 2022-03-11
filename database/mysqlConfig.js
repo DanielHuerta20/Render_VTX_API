@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const Admin = require("../models/admin");
 const Format = require("../models/format");
 const Product = require("../models/product");
 const Render = require("../models/render");
@@ -16,7 +17,7 @@ const sequelize = new Sequelize(
     logging:false
   }
 );
-
+const AdminModel = Admin(sequelize);
 const UserModel = User(sequelize);
 const ProductModel  = Product(sequelize);
 const RenderModel = Render(sequelize);
@@ -38,6 +39,7 @@ const dbConectionMysql = async () => {
 
 module.exports = {
   UserModel,
+  AdminModel,
   FormatModel,
   ProductModel,
   RenderModel,

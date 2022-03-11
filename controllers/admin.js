@@ -3,13 +3,11 @@ const { response } = require("express");
 const { genJWT } = require("../helpers/jwt");
 const fetch = require("node-fetch");
 const { fakeAdmin } = require("../database/fakeDatabase");
+const { AdminModel } = require("../database/mysqlConfig");
 
 const login = async (req, res = response) => {
   const { email, password } = req.body;
-  const admin = fakeAdmin.find((admin) => {
-    return admin.email === email;
-  });
-
+  const admin = await AdminModel.findOne({where:{email}})
   if (!admin || !admin.status) {
     return res.status(400).json({
       msg: "Ususario no adminitdo",
@@ -36,7 +34,7 @@ const login = async (req, res = response) => {
         });
       } else {
         res.status(404).json({
-          msg: "Usuario no adminitdo",
+          msg: "Usuario no adminitdo service",
         });
       }
     }
@@ -49,24 +47,24 @@ const consultingServiceClientAuthAdmin = async (
   password,
   callback
 ) => {
-  // fetch(`${url}?Username=${email}&Password=${password}`, {
-  //   method: "GET",
-  //   headers: { "Content-Type": "application/json" },
-  // }).then((res) => {
-  //   if (res.status === 200) {
-  //     callback({ ok: true });
-  //   } else {
-  //     callback({ ok: false });
-  //   }
-  // });
-  callback({ ok: true });
+  fetch(`${url}?Username=${email}&Password=${password}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }).then((res) => {
+    if (res.status === 200) {
+      callback({ ok: true });
+    } else {
+      callback({ ok: false });
+    }
+  });
+  // callback({ ok: true });
 };
 
 const getAllAdmins = async (req, res = response) => {
-  const query = { status: true };
-
-  const admins = fakeAdmin.filter((admin) => {
-    return admin.status === true;
+  const admins =await AdminModel.findAll({
+    where: {
+      status:true
+    }
   });
   res.json({
     admins,
@@ -75,36 +73,29 @@ const getAllAdmins = async (req, res = response) => {
 
 const createAdmin = async (req, res = response) => {
   const { name, email } = req.body;
-  const adminexist = fakeAdmin.find(admin => {return admin.email === email})
+  const adminexist =await AdminModel.findOne({where:{email:email}})
   if (adminexist) {
     return res.status(400).json({
-      error: "ya existe usuario " + email,
+      error: "ya existe administrador: " + email,
     });
   }
-  const adm = {
-    id: fakeAdmin.length + 1,
-    name,
-    email,
-    dateCreated: new Date().toISOString().slice(0, 10),
-    status: true,
-  }
-
-  fakeAdmin.push(adm)
+  const Addadmin = await AdminModel.create({name,email,status:true})
   // adm.sa;
   res.json({
     msg: "UserAdmin created!",
-    adm,
+    Addadmin
   });
 };
 
 const deleteAdmin = async (req, res = response) => {
-  const { id: adminId } = req.body;
-  const admin = fakeAdmin.find(admin => {return admin.id === parseInt(adminId)})
+  const { id } = req.body;
+  const admin = await AdminModel.findOne({where:{id:id}})
   if (!admin) {
     return res.status(400).json({
       error: "no existe el admin",
     });
   } else {
+    admin.update({status:false})
     res.json({
       msg: "Admin eliminado!",
     });

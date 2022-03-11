@@ -16,14 +16,14 @@ router.post("/login",[
 router.get("/",getAllAdmins)
 
 router.post("/create",[
-    validateJwt,
+    // validateJwt,
     check("name","Es necesario un nombre").not().isEmpty(),          
     check("email","Es necesario un email").not().isEmpty(),          
     validateCampos
 ],createAdmin)
 
 router.delete("/delete",[
-    validateJwt,
+    // validateJwt,
     check("id","Es necesario un id").not().isEmpty(),          
     validateCampos
 ],deleteAdmin)
