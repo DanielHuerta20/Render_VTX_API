@@ -12,6 +12,7 @@ const {
   addThumbnailToProduct,
   deleteImgThumbnail,
   addBigImgToProduct,
+  productGetComplete,
 } = require("../controllers/product");
 const { exitProductById } = require("../helpers/db-validators");
 const { validateCampos } = require("../middlewares/validateCampos");
@@ -22,6 +23,7 @@ const router = Router();
 
 // used
 router.get("/", productGet);
+router.get("/complete", productGetComplete);
 
 router.post("/addrender",addRenderToProduct)
 
@@ -32,7 +34,7 @@ router.post("/addthumbnail",addThumbnailToProduct)
 router.post(
   "/chagestatus",
   [
-    validateJwt,
+    // validateJwt,
     check("id").custom(exitProductById),
     check("available", "No tienes el estado a cambiar").not().isEmpty(),
     validateCampos,

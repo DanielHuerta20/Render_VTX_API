@@ -21,6 +21,18 @@ const productGet =async (req,res = response) => {
             })
         })
 }
+const productGetComplete =async (req,res = response) => {
+    const productsDataBase = await ProductModel.findAll()
+        onGetRendersToProducts(productsDataBase,(productsWhitRender)=>{
+            onGetThumbnailsToProducts(productsWhitRender,(products)=>{
+                res.json({
+                    AlltotalProducts:productsDataBase.length,
+                    toalProductsInThisQuery:productsDataBase.length,
+                    products:products
+                })
+            })
+        })
+}
 
 const onGetRendersToProducts =  async (productsDataBase,callback)=>{
     const productsWhitImg = await Promise.all(
@@ -210,16 +222,17 @@ const disableAll =async (req,res = response) => {
 
 const changeStatusProduct = async(req,res = response) =>{
     const {id,available} = req.body
-    const product = fakeProduct.find(product => {return product.id === parseInt(id)})
-    if((available && product.smallPicture!=='' && product.albedo !=='' && product.normal !=='') || !available ){
-        product.available = available
+    const product =await ProductModel.findOne({where:{id}})
+    if(product ){
+        await product.update({available:available})
+        await product.save();
         res.json({
             msg:"status cambio",
         })
     }
     else{
         res.status(404).json({
-            error:'el producto no esta completo para actiarlo'
+            error:'el producto no existe'
         })
     }
     
@@ -375,6 +388,7 @@ const deleteImgThumbnail = async (req,res = response)=>{
 module.exports={
     productGet,
     addBigImgToProduct,
+    productGetComplete,
     addThumbnailToProduct,
     addRenderToProduct,
     deleteImgThumbnail,
