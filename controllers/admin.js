@@ -7,15 +7,6 @@ const { AdminModel } = require("../database/mysqlConfig");
 
 const login = async (req, res = response) => {
   // 
-  console.log("kha")
-  const token = await genJWT(1);
-        res.json({
-          ok: true,
-          token,
-          msg: "entro",
-          name: "test",
-        });
-  // 
   const { email, password } = req.body;
   const admin = await AdminModel.findOne({where:{email}})
   if (!admin || !admin.status) {
