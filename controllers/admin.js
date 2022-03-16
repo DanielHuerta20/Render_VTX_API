@@ -76,9 +76,17 @@ const createAdmin = async (req, res = response) => {
   const { name, email } = req.body;
   const adminexist =await AdminModel.findOne({where:{email:email}})
   if (adminexist) {
-    return res.status(400).json({
-      error: "ya existe administrador: " + email,
-    });
+    if(adminexist.dataValues.status){
+      return res.status(400).json({
+        error: "ya existe administrador: " + email,
+      });
+    }else{
+      adminexist.update({status:true, name})
+      return res.json({
+        msg: "UserAdmin created!",
+        Addadmin: adminexist
+      });
+    }
   }
   const Addadmin = await AdminModel.create({name,email,status:true})
   // adm.sa;
