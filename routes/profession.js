@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { getAllProfessions, addNewProfession, updateProfession } = require("../controllers/profession");
+const { getAllProfessions, addNewProfession, updateProfession, delteProfession } = require("../controllers/profession");
 const { validateCampos } = require("../middlewares/validateCampos");
 
 const router = Router();
@@ -18,5 +18,10 @@ router.post('/update',[
     check("profession","Es necesaria la profession").not().isEmpty(),
     validateCampos
 ],updateProfession)
+
+router.delete('/delete',[
+    check("id","Es necesario el id del formato").not().isEmpty(),
+    validateCampos
+],delteProfession)
 
 module.exports = router;

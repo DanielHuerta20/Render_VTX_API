@@ -53,8 +53,29 @@ const updateProfession = async(req,res=response)=>{
     }
 }
 
+
+const delteProfession = async(req,res=response)=>{
+    const {id} = req.body;
+    if(id){
+       const professionToDelete =  await ProfessionModel.findOne({
+            where: {id:id},
+        })
+        await professionToDelete.update({status:false})
+        await professionToDelete.save()
+        res.json({
+            msg:"eliminado correctamente"
+        })
+    }
+    else{
+        res.status(404).json({
+            error:'no se encontro toda la informacion en  el body'
+        })
+    }
+} 
+
 module.exports={
     getAllProfessions,
     addNewProfession,
     updateProfession,
+    delteProfession,
 }
