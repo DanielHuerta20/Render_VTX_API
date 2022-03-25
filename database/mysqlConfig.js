@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 const Admin = require("../models/admin");
 const Format = require("../models/format");
 const Product = require("../models/product");
+const Profession = require("../models/profession");
 const Render = require("../models/render");
 const Serie = require("../models/serie");
 const Thumbnail = require("../models/thumbnail");
@@ -17,6 +18,7 @@ const sequelize = new Sequelize(
     logging:false
   }
 );
+const ProfessionModel = Profession(sequelize)
 const AdminModel = Admin(sequelize);
 const UserModel = User(sequelize);
 const ProductModel  = Product(sequelize);
@@ -40,6 +42,7 @@ const dbConectionMysql = async () => {
 module.exports = {
   UserModel,
   AdminModel,
+  ProfessionModel,
   FormatModel,
   ProductModel,
   RenderModel,
