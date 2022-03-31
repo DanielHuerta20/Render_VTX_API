@@ -36,10 +36,9 @@ class Server {
 
   async conectDB() {
     await dbConectionMysql();
-    // await dbConnection();
     // actualizar DB servicio de oracle
-    // getDB.start();
-    // ActualizarDB();
+    getDB.start();
+    ActualizarDB();
   }
 
   middlewares() {
